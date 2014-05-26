@@ -122,13 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DCSlideMenu/DCSideMenuViewControllerSubclass.m"
-            timestampString = "422457657.96438"
+            timestampString = "422807325.262554"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "-viewControllerForContentAtIndex:"
-            landmarkType = "5">
+            startingLineNumber = "162"
+            endingLineNumber = "162">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -138,13 +136,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DCSlideMenu/DCSideMenuViewControllerSubclass.m"
-            timestampString = "422457657.96438"
+            timestampString = "422807325.262554"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
-            landmarkName = "-viewControllerForContentAtIndex:"
-            landmarkType = "5">
+            startingLineNumber = "166"
+            endingLineNumber = "166">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -154,13 +150,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DCSlideMenu/DCSideMenuViewControllerSubclass.m"
-            timestampString = "422457657.96438"
+            timestampString = "422807325.262554"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
-            landmarkName = "-viewControllerForContentAtIndex:"
-            landmarkType = "5">
+            startingLineNumber = "170"
+            endingLineNumber = "170">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

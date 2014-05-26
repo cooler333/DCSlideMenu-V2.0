@@ -8,9 +8,9 @@
 
 
 #import <UIKit/UIKit.h>
-#import "DCSideMenuController.h"
+#import "DCSideMenuViewController.h"
 
 
-@interface DCSideMenuViewControllerSubclass : DCSideMenuController
+@interface DCSideMenuViewControllerSubclass : DCSideMenuViewController
 
 @end

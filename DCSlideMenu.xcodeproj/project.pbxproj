@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		843BDBB019337E5700D525EA /* DCSideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */; };
 		8464BA91192A1DD7002987DF /* DCLeftSideMenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8464BA90192A1DD7002987DF /* DCLeftSideMenuTableViewController.m */; };
 		849E333C192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E333B192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m */; };
 		849E333F192CE46700D8C914 /* DCLeftItemSideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E333E192CE46700D8C914 /* DCLeftItemSideViewController.m */; };
@@ -20,10 +21,11 @@
 		84F718F6192A14A300709A08 /* DCSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84F718F5192A14A300709A08 /* DCSecondViewController.m */; };
 		84F718F8192A14A300709A08 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84F718F7192A14A300709A08 /* Images.xcassets */; };
 		84F77F1E192E2F610050F8CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84F77F1C192E2F610050F8CC /* Main.storyboard */; };
-		84F77F23192E308D0050F8CC /* DCSideMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84F77F22192E308D0050F8CC /* DCSideMenuController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewController.h; sourceTree = "<group>"; };
+		843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCSideMenuViewController.m; sourceTree = "<group>"; };
 		8464BA8F192A1DD7002987DF /* DCLeftSideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCLeftSideMenuTableViewController.h; sourceTree = "<group>"; };
 		8464BA90192A1DD7002987DF /* DCLeftSideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCLeftSideMenuTableViewController.m; sourceTree = "<group>"; };
 		849E333A192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewControllerSubclass.h; sourceTree = "<group>"; };
@@ -46,8 +48,6 @@
 		84F718F5192A14A300709A08 /* DCSecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DCSecondViewController.m; sourceTree = "<group>"; };
 		84F718F7192A14A300709A08 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		84F77F1D192E2F610050F8CC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = DCSlideMenu/en.lproj/Main.storyboard; sourceTree = "<group>"; };
-		84F77F20192E30800050F8CC /* DCSideMenuController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DCSideMenuController.h; path = ../DCSideMenuController/DCSideMenuController.h; sourceTree = "<group>"; };
-		84F77F22192E308D0050F8CC /* DCSideMenuController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DCSideMenuController.m; path = ../DCSideMenuController/DCSideMenuController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,8 +67,8 @@
 		8464BA88192A1786002987DF /* DCSIdeMenu */ = {
 			isa = PBXGroup;
 			children = (
-				84F77F22192E308D0050F8CC /* DCSideMenuController.m */,
-				84F77F20192E30800050F8CC /* DCSideMenuController.h */,
+				843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */,
+				843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */,
 			);
 			name = DCSIdeMenu;
 			sourceTree = "<group>";
@@ -248,7 +248,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84F77F23192E308D0050F8CC /* DCSideMenuController.m in Sources */,
 				849E333F192CE46700D8C914 /* DCLeftItemSideViewController.m in Sources */,
 				84F718E6192A14A300709A08 /* main.m in Sources */,
 				84F718F6192A14A300709A08 /* DCSecondViewController.m in Sources */,
@@ -256,6 +255,7 @@
 				849E333C192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m in Sources */,
 				8464BA91192A1DD7002987DF /* DCLeftSideMenuTableViewController.m in Sources */,
 				84F718EA192A14A300709A08 /* DCAppDelegate.m in Sources */,
+				843BDBB019337E5700D525EA /* DCSideMenuViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
