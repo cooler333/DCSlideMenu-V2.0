@@ -26,6 +26,7 @@
 /* Begin PBXFileReference section */
 		843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewController.h; sourceTree = "<group>"; };
 		843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCSideMenuViewController.m; sourceTree = "<group>"; };
+		843BDBB119338FD800D525EA /* DCSideMenuProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DCSideMenuProtocol.h; sourceTree = "<group>"; };
 		8464BA8F192A1DD7002987DF /* DCLeftSideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCLeftSideMenuTableViewController.h; sourceTree = "<group>"; };
 		8464BA90192A1DD7002987DF /* DCLeftSideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCLeftSideMenuTableViewController.m; sourceTree = "<group>"; };
 		849E333A192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewControllerSubclass.h; sourceTree = "<group>"; };
@@ -69,6 +70,7 @@
 			children = (
 				843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */,
 				843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */,
+				843BDBB119338FD800D525EA /* DCSideMenuProtocol.h */,
 			);
 			name = DCSIdeMenu;
 			sourceTree = "<group>";

@@ -8,9 +8,7 @@
 
 
 #import <UIKit/UIKit.h>
-
-@protocol DCSideMenuDataSource;
-@protocol DCSideMenuDelegate;
+#import "DCSideMenuProtocol.h"
 
 
 @interface DCSideMenuViewController : UIViewController
@@ -27,32 +25,5 @@
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(Boolean)animated;
 - (void)setSideMenuViewController:(UIViewController *)sideMenuViewController animated:(Boolean)animated;
-
-@end
-
-
-@protocol DCSideMenuDataSource <NSObject>
-
-@required
-- (UIViewController *)viewControllerForItemAtIndex:(NSUInteger)idx;    // Default: nil
-
-@optional
-- (CGFloat)menuWidthForOrientation:(UIInterfaceOrientation)orientation;     // Default: 230 points;
-- (UIImage *)imageForMenuBarButtonItem;                                     // if nil: title.text = @"Menu" else: image;
-- (Boolean)shouldBounce;                                                    // Default: YES;
-
-
-@end
-
-@protocol DCSideMenuDelegate <NSObject>
-
-@optional
-- (BOOL)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController shouldSelectItemAtIndex:(NSUInteger)idx; // Default: YES;
-
-- (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController willSelectItemAtIndex:(NSUInteger)idx;
-- (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController willDeselectItemAtIndex:(NSUInteger)idx;
-
-- (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController didSelectItemAtIndex:(NSUInteger)idx;
-- (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController didDeselectItemAtIndex:(NSUInteger)idx;
 
 @end
