@@ -191,6 +191,7 @@
                 [self _willDeselectItemAtIndex:_selectedIndex];
                 [self _willSelectItemAtIndex:selectedIndex];
                 if (completed0) {
+                    [self.selectedViewController willMoveToParentViewController:nil];
                     [self.selectedViewController removeFromParentViewController];
                     [self.selectedViewController.view removeFromSuperview];
                     
@@ -265,7 +266,7 @@
     [self.contentView addSubview:self.selectedViewController.view];
     self.selectedViewController.view.frame = self.contentView.bounds;
     self.selectedViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-//    [self.selectedViewController didMoveToParentViewController:self];
+    [self.selectedViewController didMoveToParentViewController:self];
 }
 
 - (void)addMenuItem {
@@ -304,10 +305,9 @@
     
     if (animated) {
         if (self.sideMenuViewController) {
-//            [self.menuViewController willMoveToParentViewController:nil];
+            [self.sideMenuViewController willMoveToParentViewController:nil];
             [self.sideMenuViewController removeFromParentViewController];
         }
-//        [leftMenuController willMoveToParentViewController:self];
         [self addChildViewController:sideMenuViewController];
 
         sideMenuViewController.view.frame = self.view.bounds;
@@ -320,29 +320,20 @@
             }
             [self.view insertSubview:sideMenuViewController.view belowSubview:self.contentView];
         } completion:^(BOOL finished) {
-            if (self.sideMenuViewController) {
-//                [self.currentMenuViewController didMoveToParentViewController:nil];
-            }
-            
-//            [leftMenuController didMoveToParentViewController:self];
-            
+            [sideMenuViewController didMoveToParentViewController:self];
             self.sideMenuViewController = sideMenuViewController;
         }];
     } else {
         if (self.sideMenuViewController) {
-//            [self.currentMenuViewController willMoveToParentViewController:nil];
+            [self.sideMenuViewController willMoveToParentViewController:nil];
             [self.sideMenuViewController removeFromParentViewController];
             [self.sideMenuViewController.view removeFromSuperview];
-//            [self.currentMenuViewController didMoveToParentViewController:nil];
         }
-        
-//        [leftMenuController willMoveToParentViewController:self];
         [self addChildViewController:sideMenuViewController];
         sideMenuViewController.view.frame = self.view.bounds;
         sideMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
         [self.view insertSubview:sideMenuViewController.view belowSubview:self.contentView];
-//        [leftMenuController didMoveToParentViewController:self];
-        
+        [sideMenuViewController didMoveToParentViewController:self];
         self.sideMenuViewController = sideMenuViewController;
     }
 }
