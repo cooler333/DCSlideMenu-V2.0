@@ -64,7 +64,7 @@
 }
 
 - (void)tap:(UIButton *)button {
-// To select UIViewController use (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(Boolean)animated
+// To select UIViewController use (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated
     [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:button.tag animated:YES];
 }
 

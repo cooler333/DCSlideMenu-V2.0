@@ -64,7 +64,7 @@
     if (indexPath) {
 // Calculate index
         NSUInteger index = [self currentIndex:indexPath];
-// To select UIViewController use (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(Boolean)animated
+// To select UIViewController use (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated
         [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:index animated:YES];
     }
 }
