@@ -9,12 +9,9 @@
 
 #import "DCSideMenuViewController.h"
 
-#define isPhone568 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && [UIScreen mainScreen].bounds.size.height == 568)
-#define isPhone ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && [UIScreen mainScreen].bounds.size.height != 568)
-#define isPad ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-
-
-@interface DCSideMenuViewController () <UIDynamicAnimatorDelegate, UICollisionBehaviorDelegate>
+// TODO: Uncomment when fix "UIDynamicAnimator weird animation"
+//@interface DCSideMenuViewController () <UIDynamicAnimatorDelegate, UICollisionBehaviorDelegate>
+@interface DCSideMenuViewController ()
 {
 // TODO: Uncomment when fix "UIDynamicAnimator weird animation"
 //    UIDynamicAnimator *animator;
@@ -23,23 +20,36 @@
 //    UIGravityBehavior *gravityBehavior;
 //    UIDynamicItemBehavior *elasticityBehavior;
     UIInterfaceOrientation cacheOrientation;
+    
+// DCSideMenuDataSource Cache
+    BOOL dataSourceDidResponseForSelector_viewControllerForItemAtIndex;
+    BOOL dataSourceDidResponseForSelector_menuWidthForOrientation;
+    BOOL dataSourceDidResponseForSelector_imageForMenuBarButtonItem;
+    BOOL dataSourceDidResponseForSelector_shouldBounce;
+    BOOL dataSourceDidResponseForSelector_shouldStartAtIndex;
+    
+// DCSideMenuDelegate Cache
+    BOOL delegateDidResponseForSelector_shouldSelectItemAtIndex;
+    BOOL delegateDidResponseForSelector_willSelectItemAtIndex;
+    BOOL delegateDidResponseForSelector_willDeselectItemAtIndex;
+    BOOL delegateDidResponseForSelector_didSelectItemAtIndex;
+    BOOL delegateDidResponseForSelector_didDeselectItemAtIndex;
 }
 
 //
-@property (nonatomic, assign) NSUInteger selectedIndex;
-@property (nonatomic, strong) UIViewController *selectedViewController;
-@property (nonatomic, strong) NSCache *viewControllersCache;
-//
+@property (nonatomic, assign) NSUInteger    selectedIndex;
+@property (nonatomic, assign) BOOL       isOpen;
 
 @property (nonatomic, strong) UIViewController *sideMenuViewController;
+@property (nonatomic, strong) UIViewController *selectedViewController;
 
-@property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIButton *topContentView;
+//
+@property (nonatomic, strong) NSCache *viewControllersCache;
+
+@property (nonatomic, strong) UIView    *contentView;
+@property (nonatomic, strong) UIButton  *topContentView;
 
 @property (nonatomic, strong) UIPanGestureRecognizer *panGestureRecognizer;
-
-@property (nonatomic, assign) Boolean isOpen;
-
 @end
 
 
@@ -60,7 +70,13 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self setSelectedIndex:0 animated:NO];
+    
+    [self _willSelectItemAtIndex:[self _shouldStartAtIndex]];
+    [self restoreViewControllerStateAtIndex:[self _shouldStartAtIndex]];
+    [self slideInAnimated:NO completion:^(BOOL completed1) {
+        _selectedIndex = [self _shouldStartAtIndex];
+        [self _didSelectItemAtIndex:_selectedIndex];
+    }];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -137,49 +153,92 @@
 
 #pragma mark - Setters
 
-- (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(Boolean)animated {
+- (void)setDataSource:(id<DCSideMenuDataSource>)dataSource {
+    if (dataSource) {
+        dataSourceDidResponseForSelector_viewControllerForItemAtIndex = [dataSource respondsToSelector:@selector(viewControllerForItemAtIndex:)];
+        dataSourceDidResponseForSelector_menuWidthForOrientation = [dataSource respondsToSelector:@selector(menuWidthForOrientation:)];
+        dataSourceDidResponseForSelector_imageForMenuBarButtonItem = [dataSource respondsToSelector:@selector(imageForMenuBarButtonItem)];
+        dataSourceDidResponseForSelector_shouldBounce = [dataSource respondsToSelector:@selector(shouldBounce)];
+        dataSourceDidResponseForSelector_shouldStartAtIndex = [dataSource respondsToSelector:@selector(shouldStartAtIndex)];
+        
+        _dataSource = dataSource;
+    }
+}
+
+- (void)setDelegate:(id<DCSideMenuDelegate>)delegate {
+    if (delegate) {
+        delegateDidResponseForSelector_shouldSelectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:shouldSelectItemAtIndex:)];
+        delegateDidResponseForSelector_willSelectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:willSelectItemAtIndex:)];
+        delegateDidResponseForSelector_willDeselectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:willDeselectItemAtIndex:)];
+        delegateDidResponseForSelector_didSelectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:didSelectItemAtIndex:)];
+        delegateDidResponseForSelector_didDeselectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:didDeselectItemAtIndex:)];
+        
+        _delegate = delegate;
+    }
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated {
 // TODO: Uncomment when fix "UIDynamicAnimator weird animation"
 //    [self removeAnimation];
     self.view.userInteractionEnabled = NO;
-    if (self.selectedIndex != selectedIndex) {  // Exchange old UIViewController view with new UIViewController view
+    
+    if (self.selectedIndex != selectedIndex && [self _shouldSelectItemAtIndex:selectedIndex]) {  // Exchange old UIViewController view with new UIViewController view
         if ([self.selectedViewController.view.superview isEqual:self.contentView]) {    // Exchange animation block
             [self slideOutAnimated:animated completion:^(BOOL completed0) {
+                [self _willDeselectItemAtIndex:_selectedIndex];
+                [self _willSelectItemAtIndex:selectedIndex];
                 if (completed0) {
+                    [self.selectedViewController willMoveToParentViewController:nil];
                     [self.selectedViewController removeFromParentViewController];
                     [self.selectedViewController.view removeFromSuperview];
                     
-                    _selectedIndex = selectedIndex;
-                    [self restoreViewControllerStateAtIndex:_selectedIndex];
-                    
+                    [self restoreViewControllerStateAtIndex:selectedIndex];
                     [self slideInAnimated:animated completion:^(BOOL completed1) {
+                        [self _didDeselectItemAtIndex:_selectedIndex];
+                        _selectedIndex = selectedIndex;
                         self.view.userInteractionEnabled = YES;
+                        [self _didSelectItemAtIndex:_selectedIndex];
                     }];
                 } else {
+                    [self _didDeselectItemAtIndex:_selectedIndex];
                     self.view.userInteractionEnabled = YES;
+                    [self _didSelectItemAtIndex:_selectedIndex];
                 }
             }];
-        } else {    // Add new UIViewController view
+        } else {
             [self slideOutAnimated:animated completion:^(BOOL completed0) {
+                [self _willDeselectItemAtIndex:_selectedIndex];
+                [self _willSelectItemAtIndex:selectedIndex];
                 if (completed0) {
-                    _selectedIndex = selectedIndex;
-                    [self restoreViewControllerStateAtIndex:_selectedIndex];
+                    [self restoreViewControllerStateAtIndex:selectedIndex];
                     
                     [self slideInAnimated:animated completion:^(BOOL completed1) {
+                        [self _didDeselectItemAtIndex:_selectedIndex];
+                        _selectedIndex = selectedIndex;
                         self.view.userInteractionEnabled = YES;
+                        [self _didSelectItemAtIndex:_selectedIndex];
                     }];
                 } else {
+                    [self _didDeselectItemAtIndex:_selectedIndex];
                     self.view.userInteractionEnabled = YES;
+                    [self _didSelectItemAtIndex:_selectedIndex];
                 }
             }];
         }
     } else {    // Show animation block without view exchanging
         [self slideOutAnimated:animated completion:^(BOOL completed0) {
+            [self _willDeselectItemAtIndex:_selectedIndex];
+            [self _willSelectItemAtIndex:selectedIndex];
             if (completed0) {
                 [self slideInAnimated:animated completion:^(BOOL completed1) {
+                    [self _didDeselectItemAtIndex:_selectedIndex];
                     self.view.userInteractionEnabled = YES;
+                    [self _didSelectItemAtIndex:_selectedIndex];
                 }];
             } else {
+                [self _didDeselectItemAtIndex:_selectedIndex];
                 self.view.userInteractionEnabled = YES;
+                [self _didSelectItemAtIndex:_selectedIndex];
             }
         }];
     }
@@ -188,7 +247,7 @@
 - (void)restoreViewControllerStateAtIndex:(NSUInteger)idx {
     UIViewController *vc = [self.viewControllersCache objectForKey:[self keyStringForIndex:idx]];
     if (!vc) {
-        vc = [self viewControllerForContentAtIndex:idx];
+        vc = [self _viewControllerForItemAtIndex:idx];
         
         if (!vc) {
             return;
@@ -204,7 +263,7 @@
     [self.contentView addSubview:self.selectedViewController.view];
     self.selectedViewController.view.frame = self.contentView.bounds;
     self.selectedViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-//    [self.selectedViewController didMoveToParentViewController:self];
+    [self.selectedViewController didMoveToParentViewController:self];
 }
 
 - (void)addMenuItem {
@@ -212,8 +271,8 @@
         UINavigationController *nvc = (UINavigationController *)self.selectedViewController;
         UIViewController *vc = [nvc.viewControllers objectAtIndex:0];
         UIBarButtonItem *menuButton;
-        if ([self imageForMenuBarButtonItem]) {
-            menuButton = [[UIBarButtonItem alloc] initWithImage:[self imageForMenuBarButtonItem] style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
+        if ([self _imageForMenuBarButtonItem]) {
+            menuButton = [[UIBarButtonItem alloc] initWithImage:[self _imageForMenuBarButtonItem] style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
         } else {
             menuButton = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
         }
@@ -221,8 +280,8 @@
     } else if ([self.selectedViewController isKindOfClass:[UIViewController class]]) {
         if (self.selectedViewController.navigationItem) {
             UIBarButtonItem *menuButton;
-            if ([self imageForMenuBarButtonItem]) {
-              menuButton = [[UIBarButtonItem alloc] initWithImage:[self imageForMenuBarButtonItem] style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
+            if ([self _imageForMenuBarButtonItem]) {
+              menuButton = [[UIBarButtonItem alloc] initWithImage:[self _imageForMenuBarButtonItem] style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
             } else {
                  menuButton = [[UIBarButtonItem alloc] initWithTitle:@"Menu" style:UIBarButtonItemStyleBordered target:self action:@selector(tapAction)];
             }
@@ -231,7 +290,7 @@
     }
 }
 
-- (void)setSideMenuViewController:(UIViewController *)sideMenuViewController animated:(Boolean)animated {
+- (void)setSideMenuViewController:(UIViewController *)sideMenuViewController animated:(BOOL)animated {
     if (!sideMenuViewController) {
         NSLog(@"THE NIL");
         return;
@@ -243,10 +302,9 @@
     
     if (animated) {
         if (self.sideMenuViewController) {
-//            [self.menuViewController willMoveToParentViewController:nil];
+            [self.sideMenuViewController willMoveToParentViewController:nil];
             [self.sideMenuViewController removeFromParentViewController];
         }
-//        [leftMenuController willMoveToParentViewController:self];
         [self addChildViewController:sideMenuViewController];
 
         sideMenuViewController.view.frame = self.view.bounds;
@@ -259,29 +317,20 @@
             }
             [self.view insertSubview:sideMenuViewController.view belowSubview:self.contentView];
         } completion:^(BOOL finished) {
-            if (self.sideMenuViewController) {
-//                [self.currentMenuViewController didMoveToParentViewController:nil];
-            }
-            
-//            [leftMenuController didMoveToParentViewController:self];
-            
+            [sideMenuViewController didMoveToParentViewController:self];
             self.sideMenuViewController = sideMenuViewController;
         }];
     } else {
         if (self.sideMenuViewController) {
-//            [self.currentMenuViewController willMoveToParentViewController:nil];
+            [self.sideMenuViewController willMoveToParentViewController:nil];
             [self.sideMenuViewController removeFromParentViewController];
             [self.sideMenuViewController.view removeFromSuperview];
-//            [self.currentMenuViewController didMoveToParentViewController:nil];
         }
-        
-//        [leftMenuController willMoveToParentViewController:self];
         [self addChildViewController:sideMenuViewController];
         sideMenuViewController.view.frame = self.view.bounds;
         sideMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
         [self.view insertSubview:sideMenuViewController.view belowSubview:self.contentView];
-//        [leftMenuController didMoveToParentViewController:self];
-        
+        [sideMenuViewController didMoveToParentViewController:self];
         self.sideMenuViewController = sideMenuViewController;
     }
 }
@@ -292,7 +341,7 @@
 #pragma mark - Private Methods
 
 // Slide animation
-- (void)slideInAnimated:(Boolean)animated completion:(void (^)(BOOL completed))completion {
+- (void)slideInAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completion {
     CGRect bounds = self.view.bounds;
     if (animated) {
         [self disableGestureRecognizers];
@@ -320,7 +369,7 @@
     }
 }
 
-- (void)slideOutAnimated:(Boolean)animated completion:(void (^)(BOOL completed))completion {
+- (void)slideOutAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completion {
     CGRect bounds = self.view.bounds;
     if (animated) {
         [self disableGestureRecognizers];
@@ -348,13 +397,13 @@
     }
 }
 
-- (void)slideToSideAnimated:(Boolean)animated completion:(void (^)(BOOL completed))completion {
-    CGFloat menuWidth = [self menuWidthForOrientation:cacheOrientation];
+- (void)slideToSideAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completion {
+    CGFloat menuWidth = [self _menuWidthForOrientation:cacheOrientation];
     CGRect bounds = self.view.bounds;
     if (animated) {
         [self disableGestureRecognizers];
         [self addTopContentView];
-        if (self.shouldBounce) {
+        if ([self _shouldBounce]) {
             [UIView animateWithDuration:0.6f delay:0.0f usingSpringWithDamping:0.6f initialSpringVelocity:0.6f options:0 animations:^{
                 self.contentView.frame = CGRectMake(menuWidth, 0.0, bounds.size.width, bounds.size.height);
                 self.topContentView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.7f];
@@ -428,7 +477,7 @@
     CGPoint translation = [gesture translationInView:panningView];
     UIView *movingView = self.contentView;
     
-    CGFloat menuWidth = [self menuWidthForOrientation:cacheOrientation];
+    CGFloat menuWidth = [self _menuWidthForOrientation:cacheOrientation];
     
     if ([gesture state] == UIGestureRecognizerStateBegan) {
 // TODO: Uncomment when fix "UIDynamicAnimator weird animation"
@@ -570,45 +619,71 @@
 
 #pragma mark - DCSideMenuDataSource
 
-- (UIViewController *)viewControllerForContentAtIndex:(NSUInteger)idx {
-    if ([self.dataSource respondsToSelector:@selector(viewControllerForContentAtIndex:)]) {
-        return [self.dataSource viewControllerForContentAtIndex:idx];
+- (UIViewController *)_viewControllerForItemAtIndex:(NSUInteger)idx {
+    if (dataSourceDidResponseForSelector_viewControllerForItemAtIndex) {
+        return [self.dataSource viewControllerForItemAtIndex:idx];
     }
     return nil;
 }
 
-- (CGFloat)menuWidthForOrientation:(UIInterfaceOrientation)orientation {
-    if ([self.dataSource respondsToSelector:@selector(menuWidthForOrientation:)]) {
+- (CGFloat)_menuWidthForOrientation:(UIInterfaceOrientation)orientation {
+    if (dataSourceDidResponseForSelector_menuWidthForOrientation) {
         return [self.dataSource menuWidthForOrientation:cacheOrientation];
     }
     return 230.0f;
 }
 
-- (UIImage *)imageForMenuBarButtonItem {
-    if ([self.dataSource respondsToSelector:@selector(imageForMenuBarButtonItem)]) {
+- (UIImage *)_imageForMenuBarButtonItem {
+    if (dataSourceDidResponseForSelector_imageForMenuBarButtonItem) {
         return [self.dataSource imageForMenuBarButtonItem];
     }
     return nil;
 }
 
-- (Boolean)shouldBounce {
-    if ([self.dataSource respondsToSelector:@selector(shouldBounce)]) {
+- (BOOL)_shouldBounce {
+    if (dataSourceDidResponseForSelector_shouldBounce) {
         return [self.dataSource shouldBounce];
     }
     return YES;
 }
 
+- (NSUInteger)_shouldStartAtIndex {
+    if (dataSourceDidResponseForSelector_shouldStartAtIndex) {
+        return [self.dataSource shouldStartAtIndex];
+    }
+    return 0;
+}
+
 #pragma mark - DCSideMenuDelegate
 
-- (void)willSelectItemAtIndex:(NSUInteger)idx {
-    if ([self.delegate respondsToSelector:@selector(sideMenuViewController:willSelectItemAtIndex:)]) {
+- (BOOL)_shouldSelectItemAtIndex:(NSUInteger)idx {
+    if (delegateDidResponseForSelector_shouldSelectItemAtIndex) {
+        return [self.delegate sideMenuViewController:self shouldSelectItemAtIndex:idx];
+    }
+    return YES;
+}
+
+- (void)_willSelectItemAtIndex:(NSUInteger)idx {
+    if (delegateDidResponseForSelector_willSelectItemAtIndex) {
         [self.delegate sideMenuViewController:self willSelectItemAtIndex:idx];
     }
 }
 
-- (void)didSelectItemAtIndex:(NSUInteger)idx {
-    if ([self.delegate respondsToSelector:@selector(sideMenuViewController:didSelectItemAtIndex:)]) {
+- (void)_willDeselectItemAtIndex:(NSUInteger)idx {
+    if (delegateDidResponseForSelector_willDeselectItemAtIndex) {
+        [self.delegate sideMenuViewController:self willDeselectItemAtIndex:idx];
+    }
+}
+
+- (void)_didSelectItemAtIndex:(NSUInteger)idx {
+    if (delegateDidResponseForSelector_didSelectItemAtIndex) {
         [self.delegate sideMenuViewController:self didSelectItemAtIndex:idx];
+    }
+}
+
+- (void)_didDeselectItemAtIndex:(NSUInteger)idx {
+    if (delegateDidResponseForSelector_didDeselectItemAtIndex) {
+        [self.delegate sideMenuViewController:self didDeselectItemAtIndex:idx];
     }
 }
 

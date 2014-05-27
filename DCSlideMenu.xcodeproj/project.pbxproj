@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		843BDBB019337E5700D525EA /* DCSideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */; };
+		843BDBB919348C7C00D525EA /* DCSideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 843BDBB719348C7C00D525EA /* DCSideMenuViewController.m */; };
 		8464BA91192A1DD7002987DF /* DCLeftSideMenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8464BA90192A1DD7002987DF /* DCLeftSideMenuTableViewController.m */; };
 		849E333C192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E333B192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m */; };
 		849E333F192CE46700D8C914 /* DCLeftItemSideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E333E192CE46700D8C914 /* DCLeftItemSideViewController.m */; };
@@ -24,9 +24,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewController.h; sourceTree = "<group>"; };
-		843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCSideMenuViewController.m; sourceTree = "<group>"; };
-		843BDBB119338FD800D525EA /* DCSideMenuProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DCSideMenuProtocol.h; sourceTree = "<group>"; };
+		843BDBB619348C7C00D525EA /* DCSideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DCSideMenuViewController.h; path = DCSideMenuViewController/DCSideMenuViewController.h; sourceTree = SOURCE_ROOT; };
+		843BDBB719348C7C00D525EA /* DCSideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DCSideMenuViewController.m; path = DCSideMenuViewController/DCSideMenuViewController.m; sourceTree = SOURCE_ROOT; };
+		843BDBB819348C7C00D525EA /* DCSideMenuProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DCSideMenuProtocol.h; path = DCSideMenuViewController/DCSideMenuProtocol.h; sourceTree = SOURCE_ROOT; };
 		8464BA8F192A1DD7002987DF /* DCLeftSideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCLeftSideMenuTableViewController.h; sourceTree = "<group>"; };
 		8464BA90192A1DD7002987DF /* DCLeftSideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCLeftSideMenuTableViewController.m; sourceTree = "<group>"; };
 		849E333A192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCSideMenuViewControllerSubclass.h; sourceTree = "<group>"; };
@@ -68,9 +68,9 @@
 		8464BA88192A1786002987DF /* DCSIdeMenu */ = {
 			isa = PBXGroup;
 			children = (
-				843BDBAE19337E5700D525EA /* DCSideMenuViewController.h */,
-				843BDBAF19337E5700D525EA /* DCSideMenuViewController.m */,
-				843BDBB119338FD800D525EA /* DCSideMenuProtocol.h */,
+				843BDBB619348C7C00D525EA /* DCSideMenuViewController.h */,
+				843BDBB719348C7C00D525EA /* DCSideMenuViewController.m */,
+				843BDBB819348C7C00D525EA /* DCSideMenuProtocol.h */,
 			);
 			name = DCSIdeMenu;
 			sourceTree = "<group>";
@@ -255,9 +255,9 @@
 				84F718F6192A14A300709A08 /* DCSecondViewController.m in Sources */,
 				84F718F3192A14A300709A08 /* DCFirstViewController.m in Sources */,
 				849E333C192CAA2E00D8C914 /* DCSideMenuViewControllerSubclass.m in Sources */,
+				843BDBB919348C7C00D525EA /* DCSideMenuViewController.m in Sources */,
 				8464BA91192A1DD7002987DF /* DCLeftSideMenuTableViewController.m in Sources */,
 				84F718EA192A14A300709A08 /* DCAppDelegate.m in Sources */,
-				843BDBB019337E5700D525EA /* DCSideMenuViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

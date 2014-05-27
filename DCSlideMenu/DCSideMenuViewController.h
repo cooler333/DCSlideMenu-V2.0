@@ -14,11 +14,11 @@
 @interface DCSideMenuViewController : UIViewController
 
 //
-@property (nonatomic, assign, readonly) NSUInteger selectedIndex;
-@property (nonatomic, assign, readonly) Boolean isOpen;
+@property (nonatomic, assign, readonly) NSUInteger  selectedIndex;
+@property (nonatomic, assign, readonly) Boolean     isOpen;
 
-@property (nonatomic, weak) id <DCSideMenuDataSource> dataSource;
-@property (nonatomic, weak) id <DCSideMenuDelegate> delegate;
+@property (nonatomic, weak) NSObject <DCSideMenuDataSource> *dataSource;
+@property (nonatomic, weak) NSObject <DCSideMenuDelegate>   *delegate;
 //
 
 @property (nonatomic, strong, readonly) UIViewController *sideMenuViewController;

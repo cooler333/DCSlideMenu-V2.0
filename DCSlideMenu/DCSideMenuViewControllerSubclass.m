@@ -120,7 +120,7 @@
     return nil;
 }
 
-- (Boolean)shouldBounce {
+- (BOOL)shouldBounce {
     return YES;
 }
 
