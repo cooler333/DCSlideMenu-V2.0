@@ -22,6 +22,7 @@
     [super viewDidLoad];    
     self.view.backgroundColor = [UIColor whiteColor];
     
+    NSLog(@"%@", self.parentViewController);
     UIButton *button0 = [UIButton buttonWithType:UIButtonTypeSystem];
     button0.frame = CGRectMake(0.0f, 40.0f, 100.0f, 40.0f);
     [button0 addTarget:self action:@selector(tap:) forControlEvents:UIControlEventTouchUpInside];
@@ -61,6 +62,9 @@
     [button4 setBackgroundColor:[UIColor whiteColor]];
     button4.tag = 4;
     [self.view addSubview:button4];
+    
+    [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:button0.tag animated:NO];
+    NSLog(@"%@", self.parentViewController);
 }
 
 - (void)tap:(UIButton *)button {

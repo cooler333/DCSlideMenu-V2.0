@@ -16,7 +16,7 @@
 #define isPad ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
 
-@interface DCSideMenuViewControllerSubclass () <DCSideMenuDataSource, DCSideMenuDelegate>
+@interface DCSideMenuViewControllerSubclass () <DCSideMenuDataSource, DCSideMenuDelegate, DCSideMenuCacheDelegate>
 
 @property (nonatomic, strong) DCLeftSideMenuTableViewController *vc1;
 @property (nonatomic, strong) DCLeftItemSideViewController *vc2;
@@ -28,18 +28,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.vc1 = [[DCLeftSideMenuTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.vc2 = [[DCLeftItemSideViewController alloc] init];
-    
-    [self setSideMenuViewController:self.vc1 animated:YES];
-    
     self.dataSource = self;
     self.delegate = self;
+    self.cacheDelegate = self;
+    
+    self.vc1 = [[DCLeftSideMenuTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.vc2 = [[DCLeftItemSideViewController alloc] init];
+    [self setSideMenuViewController:self.vc1 animated:NO];
 }
 
 // Change sideMenuViewController when view rotated;
-/*
+
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
         [self setSideMenuViewController:self.vc1 animated:NO];
@@ -47,7 +46,7 @@
         [self setSideMenuViewController:self.vc2 animated:NO];
     }
 }
-*/
+
 
 #pragma mark - DCSideMenuDataSource
 
@@ -147,6 +146,13 @@
 
 - (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController didDeselectItemAtIndex:(NSUInteger)idx {
     NSLog(@"sideMenuViewController didDeselectItemAtIndex: %lu", (unsigned long)idx);
+}
+
+#pragma mark - DCSideMenuCacheDelegate
+
+- (void)cacheWillDeallocViewController:(UIViewController *)viewController {
+    // Perform save before dealloc
+    NSLog(@"%@", viewController);
 }
 
 @end

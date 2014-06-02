@@ -21,6 +21,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.clearsSelectionOnViewWillAppear = NO; 
+    
+    NSLog(@"%@", self.parentViewController);
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    NSUInteger idx = [self currentIndex:indexPath];
+    [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:idx animated:NO];
+    NSLog(@"%@", self.parentViewController);
 }
 
 #pragma mark - Private Methods
@@ -63,9 +71,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath) {
 // Calculate index
-        NSUInteger index = [self currentIndex:indexPath];
+        NSUInteger idx = [self currentIndex:indexPath];
 // To select UIViewController use (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated
-        [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:index animated:YES];
+        [(DCSideMenuViewControllerSubclass *)self.parentViewController setSelectedIndex:idx animated:YES];
     }
 }
 

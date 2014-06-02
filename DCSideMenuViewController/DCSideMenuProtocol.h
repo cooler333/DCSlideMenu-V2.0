@@ -2,7 +2,7 @@
 //  DCSideMenuProtocol.h
 //  DCSlideMenu
 //
-//  Created by Admin on 26.05.14.
+//  Created by Dmitry Coolerov on 26.05.14.
 //  Copyright (c) 2014 Dmitry Coolerov. All rights reserved.
 //
 
@@ -32,5 +32,12 @@
 
 - (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController didSelectItemAtIndex:(NSUInteger)idx;
 - (void)sideMenuViewController:(DCSideMenuViewController *)sideMenuViewController didDeselectItemAtIndex:(NSUInteger)idx;
+
+@end
+
+@protocol DCSideMenuCacheDelegate <NSObject>
+
+@required
+- (void)cacheWillDeallocViewController:(UIViewController *)viewController;
 
 @end

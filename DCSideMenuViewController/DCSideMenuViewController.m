@@ -1,8 +1,8 @@
 //
-//  DCSideMenuController.m
+//  DCSideMenuViewController.m
 //  DCSlideMenu
 //
-//  Created by Admin on 19.05.14.
+//  Created by Dmitry Coolerov on 19.05.14.
 //  Copyright (c) 2014 Dmitry Coolerov. All rights reserved.
 //
 
@@ -11,7 +11,7 @@
 
 // TODO: Uncomment when fix "UIDynamicAnimator weird animation"
 //@interface DCSideMenuViewController () <UIDynamicAnimatorDelegate, UICollisionBehaviorDelegate>
-@interface DCSideMenuViewController ()
+@interface DCSideMenuViewController () <NSCacheDelegate>
 {
 // TODO: Uncomment when fix "UIDynamicAnimator weird animation"
 //    UIDynamicAnimator *animator;
@@ -34,11 +34,17 @@
     BOOL delegateDidResponseForSelector_willDeselectItemAtIndex;
     BOOL delegateDidResponseForSelector_didSelectItemAtIndex;
     BOOL delegateDidResponseForSelector_didDeselectItemAtIndex;
+    
+// DCSideMenuCacheDelegate
+    BOOL cacheDelegateDidResponseForSelector_cacheWillDeallocViewController;
+    
+//
+    BOOL _isLoaded;
 }
 
 //
 @property (nonatomic, assign) NSUInteger    selectedIndex;
-@property (nonatomic, assign) BOOL       isOpen;
+@property (nonatomic, assign) BOOL          isOpen;
 
 @property (nonatomic, strong) UIViewController *sideMenuViewController;
 @property (nonatomic, strong) UIViewController *selectedViewController;
@@ -46,21 +52,19 @@
 //
 @property (nonatomic, strong) NSCache *viewControllersCache;
 
-@property (nonatomic, strong) UIView    *contentView;
-@property (nonatomic, strong) UIButton  *topContentView;
+@property (nonatomic, weak) UIView    *contentView;
+@property (nonatomic, weak) UIButton  *topContentView;
 
 @property (nonatomic, strong) UIPanGestureRecognizer *panGestureRecognizer;
 @end
 
 
 @implementation DCSideMenuViewController
-@synthesize sideMenuViewController = _sideMenuViewController;
 
 #pragma mark - View MGMT
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _viewControllersCache = [[NSCache alloc] init];
     _selectedIndex = NSUIntegerMax;
     cacheOrientation = self.interfaceOrientation;
     
@@ -70,13 +74,17 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [self _willSelectItemAtIndex:[self _shouldStartAtIndex]];
-    [self restoreViewControllerStateAtIndex:[self _shouldStartAtIndex]];
-    [self slideInAnimated:NO completion:^(BOOL completed1) {
-        _selectedIndex = [self _shouldStartAtIndex];
-        [self _didSelectItemAtIndex:_selectedIndex];
-    }];
+    cacheOrientation = self.interfaceOrientation;
+
+//    if (!_isLoaded) {
+//        _isLoaded = YES;
+//        [self _willSelectItemAtIndex:[self _shouldStartAtIndex]];
+//        [self restoreViewControllerStateAtIndex:[self _shouldStartAtIndex]];
+//        [self slideInAnimated:NO completion:^(BOOL completed1) {
+//            _selectedIndex = [self _shouldStartAtIndex];
+//            [self _didSelectItemAtIndex:_selectedIndex];
+//        }];
+//    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -125,7 +133,7 @@
     if (_topContentView) {
         return _topContentView;
     }
-    UIButton *button = [[UIButton alloc] initWithFrame:self.view.bounds];
+    UIButton *button = [[UIButton alloc] initWithFrame:self.contentView.bounds];
     [button addTarget:self action:@selector(tapAction) forControlEvents:UIControlEventTouchUpInside];
     button.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     button.backgroundColor = [UIColor clearColor];
@@ -143,6 +151,17 @@
     
     _panGestureRecognizer = panGestureRecognizer;
     return _panGestureRecognizer;
+}
+
+- (NSCache *)viewControllersCache {
+    if (_viewControllersCache) {
+        return _viewControllersCache;
+    }
+    NSCache *cache = [[NSCache alloc] init];
+    cache.delegate = self;
+    
+    _viewControllersCache = cache;
+    return _viewControllersCache;
 }
 
 - (NSString *)keyStringForIndex:(NSUInteger)idx {
@@ -174,6 +193,13 @@
         delegateDidResponseForSelector_didDeselectItemAtIndex = [delegate respondsToSelector:@selector(sideMenuViewController:didDeselectItemAtIndex:)];
         
         _delegate = delegate;
+    }
+}
+
+- (void)setCacheDelegate:(NSObject<DCSideMenuCacheDelegate> *)cacheDelegate {
+    if (cacheDelegate) {
+        cacheDelegateDidResponseForSelector_cacheWillDeallocViewController = [cacheDelegate respondsToSelector:@selector(cacheWillDeallocViewController:)];
+        _cacheDelegate = cacheDelegate;
     }
 }
 
@@ -309,7 +335,6 @@
 
         sideMenuViewController.view.frame = self.view.bounds;
         sideMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-        [sideMenuViewController.view layoutIfNeeded];
         
         [UIView animateWithDuration:0.3f delay:0.0f options:UIViewAnimationOptionCurveLinear animations:^{
             if (self.sideMenuViewController) {
@@ -491,7 +516,7 @@
 
         CGPoint velocity = [gesture velocityInView:self.view];
         CGFloat xPoints = menuWidth-self.view.frame.size.width/2.0f;
-#if CGFLOAT_IS_DOUBLE
+#if defined(__LP64__) && __LP64__
         CGFloat duration = xPoints / fabs(velocity.x);
 #else
         CGFloat duration = xPoints / fabsf(velocity.x);
@@ -684,6 +709,25 @@
 - (void)_didDeselectItemAtIndex:(NSUInteger)idx {
     if (delegateDidResponseForSelector_didDeselectItemAtIndex) {
         [self.delegate sideMenuViewController:self didDeselectItemAtIndex:idx];
+    }
+}
+
+#pragma mark - DCSideMenuCacheDelegate
+
+- (void)cache:(NSCache *)cache willEvictObject:(id)obj {
+    if ([obj isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *nc = obj;
+        [nc.viewControllers enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+            [self _willDeallocViewController:obj1];
+        }];
+    } else if ([obj isKindOfClass:[UIViewController class]]) {
+        [self _willDeallocViewController:obj];
+    }
+}
+
+- (void)_willDeallocViewController:(UIViewController *)viewController {
+    if (cacheDelegateDidResponseForSelector_cacheWillDeallocViewController) {
+        [self.cacheDelegate cacheWillDeallocViewController:viewController];
     }
 }
 
